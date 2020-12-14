@@ -1,4 +1,5 @@
 import logging
+import threading
 import time
 from typing import List, Dict
 
@@ -16,23 +17,29 @@ my_store = [
 ]
 
 
+my_store_lock = threading.Lock()
+
+
 def get_pending_object(store: List[Dict[str, str]]) -> List[Dict[str, str]]:
-    return [
-        e
-        for e in store
-        if e["status"] == "pending"
-    ]
+    pending_objects = [e for e in store if e["status"] == "pending"]
+    time.sleep(0.5)
+    return pending_objects
 
 
 def handle_object(e: Dict[str, str]) -> None:
     log.info(f"▶ 👷  handle object {e['id']}")
-    time.sleep(2)
+    time.sleep(1)
     e["status"] = "completed"
 
 
 def lock_object(e: Dict[str, str]) -> bool:
-    log.info(f"lock object {e['id']} (currently we are not really locking anything...)")
-    return True  # fixme: do a real lock, once this is proved to be failing...
+    log.info(f"lock object {e['id']}")
+    with my_store_lock:
+        if e["status"] == "pending":
+            e["status"] = "in_progress"
+            return True
+
+    return False
 
 
 def do_the_job(store: List[Dict[str, str]]) -> None:
@@ -41,3 +48,6 @@ def do_the_job(store: List[Dict[str, str]]) -> None:
     for e in pending_objects:
         if lock_object(e):
             handle_object(e)
+        else:
+            log.debug(f"✨  object {e['id']} can't be locked, so let's skip it, "
+                      f"it has probably be handled by another thread")
