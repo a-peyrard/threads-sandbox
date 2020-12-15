@@ -5,7 +5,7 @@ import threading
 import time
 from typing import Dict
 
-from threads.step.step_lock import StepContext, runnable, Step
+from threads.step.step_lock import StepContext, runnable, INIT, BODY, FINALIZE
 
 logging.basicConfig(
     stream=sys.stdout,
@@ -42,31 +42,31 @@ def main():
     time.sleep(0.5)
 
     log.info("allow INIT for first thread and wait for completion")
-    contexts["first"].allow(Step.INIT)
-    contexts["first"].wait_to_complete(Step.INIT)
+    contexts["first"].allow(INIT)
+    contexts["first"].wait_to_complete(INIT)
 
     log.info("sleep a bit...")
     time.sleep(0.5)
 
     log.info("allow BODY for first and wait for completion, and allow INIT for second")
-    contexts["first"].allow(Step.BODY)
-    contexts["first"].wait_to_complete(Step.BODY)
-    contexts["second"].allow(Step.INIT)
-    contexts["second"].wait_to_complete(Step.INIT)
+    contexts["first"].allow(BODY)
+    contexts["first"].wait_to_complete(BODY)
+    contexts["second"].allow(INIT)
+    contexts["second"].wait_to_complete(INIT)
 
     log.info("sleep a bit...")
     time.sleep(0.5)
 
     log.info("allow FINALIZE for first and wait for completion")
-    contexts["first"].allow(Step.FINALIZE)
-    contexts["first"].wait_to_complete(Step.FINALIZE)
+    contexts["first"].allow(FINALIZE)
+    contexts["first"].wait_to_complete(FINALIZE)
 
     log.info("allow BODY for second and wait for completion")
-    contexts["second"].allow(Step.BODY)
-    contexts["second"].wait_to_complete(Step.BODY)
+    contexts["second"].allow(BODY)
+    contexts["second"].wait_to_complete(BODY)
     log.info("allow FINALIZE for second and wait for completion")
-    contexts["second"].allow(Step.FINALIZE)
-    contexts["second"].wait_to_complete(Step.FINALIZE)
+    contexts["second"].allow(FINALIZE)
+    contexts["second"].wait_to_complete(FINALIZE)
 
     log.info(f"wait for all the threads to complete")
     first_thread.join()

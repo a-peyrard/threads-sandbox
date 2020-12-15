@@ -3,7 +3,7 @@ import logging
 import sys
 import threading
 
-from threads.race_condition.race import do_the_job, my_store
+from threads.race_condition.race import do_the_job
 
 logging.basicConfig(
     stream=sys.stdout,
@@ -16,6 +16,18 @@ log = logging.getLogger(__name__)
 
 
 NB_THREADS = 2
+
+
+my_store = [
+    {
+        "id": "foo",
+        "status": "pending"
+    },
+    {
+        "id": "bar",
+        "status": "pending"
+    }
+]
 
 
 def _create_and_start_thread(idx: int) -> threading.Thread:

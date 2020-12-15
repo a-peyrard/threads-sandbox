@@ -16,8 +16,24 @@ i.e. changing the status in an atomic way before handling the object._
 
 The unit test can be run like this:
 ```bash
-fixme...
+py.test tests/race_condition/test_race.py -k "test_should_simulate_race_condition"
 ```
+It should succeed.
+
+If we remove the lock like this:
+```python
+def lock_object(e: Dict[str, str]) -> bool:
+    log.info(f"lock object {e['id']}")
+    # with my_store_lock:
+    #     if e["status"] == "pending":
+    #         e["status"] = "in_progress"
+    #         return True
+    # 
+    # return False
+    return True
+```
+and run the test again, 
+it should fail because `handle_object` has been called 4 times instead of twice. 
 
 ### Steps
 

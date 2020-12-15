@@ -1,34 +1,19 @@
 import logging
 import threading
-import time
 from typing import List, Dict
 
 log = logging.getLogger(__name__)
-
-my_store = [
-    {
-        "id": "foo",
-        "status": "pending"
-    },
-    {
-        "id": "bar",
-        "status": "pending"
-    }
-]
-
 
 my_store_lock = threading.Lock()
 
 
 def get_pending_object(store: List[Dict[str, str]]) -> List[Dict[str, str]]:
     pending_objects = [e for e in store if e["status"] == "pending"]
-    time.sleep(0.5)
     return pending_objects
 
 
 def handle_object(e: Dict[str, str]) -> None:
     log.info(f"▶ 👷  handle object {e['id']}")
-    time.sleep(1)
     e["status"] = "completed"
 
 
